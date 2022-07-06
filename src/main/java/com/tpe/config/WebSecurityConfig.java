@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().
+		http.csrf().disable(). // disable edilmediği taktirde sistemde güvenlik açığı oluyor
 		sessionManagement().
 		sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().
 		authorizeRequests().antMatchers("/register","/login").permitAll().

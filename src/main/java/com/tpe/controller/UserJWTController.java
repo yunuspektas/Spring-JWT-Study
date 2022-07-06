@@ -32,46 +32,40 @@ public class UserJWTController {
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	JwtUtils jwtUtils;
-	
-	
+
 	@GetMapping("/welcome")
 	public String welcome() {
 		return "Welcome Secured Area";
 	}
-	
-	
-	
+
 	@PostMapping("/register")
-	public ResponseEntity<Map<String,String>> registerUser(@Valid @RequestBody RegisterRequest request){
+	public ResponseEntity<Map<String, String>> registerUser(@Valid @RequestBody RegisterRequest request) {
 		userService.registerUser(request);
-		
-		Map<String,String> map=new HashMap<>();
+
+		Map<String, String> map = new HashMap<>();
 		map.put("message", "User registered successfuly");
-		map.put("status","true");
-		return new ResponseEntity<>(map,HttpStatus.CREATED);
+		map.put("status", "true");
+		return new ResponseEntity<>(map, HttpStatus.CREATED);
 	}
-	
-	
-	
+
 	@PostMapping("/login")
-	public ResponseEntity<Map<String,String>> login(@Valid @RequestBody LoginRequest request){
-		
-		Authentication authentication= authenticationManager.
-		authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-		
-		String token=jwtUtils.generateToken(authentication);
-		
-		
-		Map<String,String> map=new HashMap<>();
-		map.put("token",token);
-		map.put("status","true");
-		return new ResponseEntity<>(map,HttpStatus.CREATED);
+	public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest request) {
+
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
+
+		String token = jwtUtils.generateToken(authentication);
+
+		Map<String, String> map = new HashMap<>();
+		map.put("token", token);
+		map.put("status", "true");
+		return new ResponseEntity<>(map, HttpStatus.CREATED);
 	}
-	
+
 }
