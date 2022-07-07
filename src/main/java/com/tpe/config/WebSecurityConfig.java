@@ -22,45 +22,41 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true) // method base authorization sağlanacığı söyliyorum
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
-	
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable(). // disable edilmediği taktirde sistemde güvenlik açığı oluyor
-		sessionManagement().
-		sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().
-		authorizeRequests().antMatchers("/register","/login").permitAll().
-		anyRequest().authenticated();
-		
-		http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-		
+				sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+				.antMatchers("/register", "/login").permitAll().anyRequest().authenticated();
+
+		http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class); // filter eklendi
+
 	}
-	
-	@Bean
-	public AuthTokenFilter authTokenFilter() {
-		return new AuthTokenFilter();
-	}
-	
-	
-	@Bean
-	protected AuthenticationManager authenticationManager()throws Exception{
-		return super.authenticationManager();
-	}
-	
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());  // providerın kısa hali , tek satırda
 	}
-	
+
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	public AuthTokenFilter authTokenFilter() {  // filter clası bean olarak eklendi
+		return new AuthTokenFilter();
+	}
+
+	@Bean
+	protected AuthenticationManager authenticationManager() throws Exception {
+		return super.authenticationManager();
+	}
+
+	
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {  // password encode için BCrypt bean olarak containera ekleniyor
 		return new BCryptPasswordEncoder();
 	}
 

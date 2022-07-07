@@ -23,19 +23,24 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 	
+	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	
 	private String userName;
 	
-	@JsonIgnore
+	@JsonIgnore  // bu class eğer dışarı çıkarsa , password fieldının dışarı çıkmasını önlüyor
 	private String password;
 	
-	private Collection<? extends GrantedAuthority> authorities;
+	private Collection<? extends GrantedAuthority> authorities; // Spring Security benim rolelerimi bilmez, 
+	//									o GrantedAuthority tipinde objeler üzerinden role dağılımı yapıyor 															
 	
 	
-	public static UserDetailsImpl build(User user) {
+	public static UserDetailsImpl build(User user) { // bu fonksiyon sadese userın role tanımlamasını securitye izah etmek için oluşturuldu
 		List<SimpleGrantedAuthority> authorities= user.getRoles().stream().map(role->new SimpleGrantedAuthority(role.getName().name())).
-		collect(Collectors.toList());
+		collect(Collectors.toList());  // DB deki user ın role yapısını SpringSewcurity nin anlayacağı GrantedAuthority 
+		//								türünde yapılara dönüştürdüm
+		//   soru : niye List olarak tutuldu ? cevap : bir userın birden fazla rolü olabilir.
 		
 		return new UserDetailsImpl(user.getId(),user.getUserName(),user.getPassword(),authorities);
 	}

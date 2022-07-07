@@ -35,9 +35,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 		String jwtToken= parseJwt(request);
 		
+		
+		
 		try {
 			if(jwtToken!=null && jwtUtils.validateToken(jwtToken)) {
-				String userName= jwtUtils.getUserNameFromJwtToken(jwtToken);
+				String userName= jwtUtils.getUserNameFromJwtToken(jwtToken);// token oluştururken username i kullanmıştım
 				
 				UserDetails userDetails=userDetailsService.loadUserByUsername(userName);
 				//request.setAttribute("userName", userName);
@@ -50,19 +52,25 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			logger.error("User not found {}",e.getMessage());
 		}
 		
-		filterChain.doFilter(request, response);
+		filterChain.doFilter(request, response); // filterı chaine ekliyorum.. 
 	}
 	
-	private String parseJwt(HttpServletRequest request) {
-		String header=request.getHeader("Authorization");
+	
+	
+	
+	
+	private String parseJwt(HttpServletRequest request) {  // request içindeki JWT tokeni bulan metod
+		String header=request.getHeader("Authorization");  // niye sadece requestteki headır kısmını aldım ? Çünki token header kısmında
 		if(StringUtils.hasText(header)&&header.startsWith("Bearer ")) {
 			return header.substring(7);
 		}
 		return null;
 	}
 	
+	
+	
 	@Override
-	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException { // filrelemiyeceğim requestler
 		AntPathMatcher antMatcher=new AntPathMatcher();
 		return antMatcher.match("/register", request.getServletPath())||
 				antMatcher.match("/login", request.getServletPath());

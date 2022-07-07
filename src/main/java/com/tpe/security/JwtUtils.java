@@ -23,24 +23,27 @@ public class JwtUtils {
 	private static final Logger logger=LoggerFactory.getLogger(JwtUtils.class);
 	
 	
-	private String jwtSecret="batch60";
+	private String jwtSecret="batch60"; // secret key oluşturuldu.
 	
 	//24*60*60*1000
-	private long jwtExpirationMs=86400000;
+	private long jwtExpirationMs=86400000; // token yaşam süresi belirlendi
 	
 	
 	public String generateToken(Authentication authentication) {
-	   UserDetailsImpl userDetails=(UserDetailsImpl) authentication.getPrincipal();
+	   UserDetailsImpl userDetails=(UserDetailsImpl) authentication.getPrincipal(); // getPrinciple ile currently login olan user dönüyor
 	   
 	   return Jwts.builder().setSubject(userDetails.getUsername()).setIssuedAt(new Date())
+			   // Jwts.builder() metodu pom.xml e eklediğimiz "jjwt"   dependency den geliyor.
 			   .setExpiration(new Date(new Date().getTime()+jwtExpirationMs))
 			   .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
 	 
 	}
 	
+	
+	
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token); // Jwts.perser() , pom.xml ye eklenen "jjwt" ile geliyor
 			return true;
 		}catch (ExpiredJwtException e) {
 			logger.error("JWT Token expired {}",e.getMessage());
@@ -62,8 +65,11 @@ public class JwtUtils {
 	}
 	
 	
+	
+	
 	public String getUserNameFromJwtToken(String token) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+		// Jwts.perser() , pom.xml ye eklenen "jjwt" ile geliyor
 	}
 	
 
